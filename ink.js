@@ -1,19 +1,21 @@
 var Store = {
-    asa: {
-        name: 'Asa',
-        age: 24
-    }
+  asa: {
+      name: 'Asa',
+      age: 24
+  }
 };
+
+var Removers = {};
 
 var Jack = {
     config: {
       0: {
         storage: 'memory',
-        life: 5000
+        life: 1000
       },
       1: {
         storage: 'session',
-        life: 20000
+        life: 5000
       }
     },
     get: function(key) {
@@ -23,8 +25,20 @@ var Jack = {
       type = type || 0;
       var config = this.config[type];
       Store[key] = value;
-      setTimeout(function() {
+      this.setupCleanup(key, config);
+    },
+    setupCleanup: function(key, config) {
+      if(Removers[key]) {
+        clearTimeout(Removers[key].id);
+      }
+      var remove = function() {
         delete Store[key];
-      }, config.life);
+        delete Removers[key];
+      };
+      var id = setTimeout(remove, config.life);
+      Removers[key] = {
+        id: id,
+        callback: remove
+      };
     }
 };
