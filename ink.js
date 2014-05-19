@@ -19,7 +19,11 @@ var Jack = {
       }
     },
     get: function(key) {
-        return Store[key];
+        if(Store.hasOwnProperty(key)){
+          return Store[key];
+        } else {
+          return null;
+        }
     },
     set: function(key, value, type) {
       type = type || 0;
